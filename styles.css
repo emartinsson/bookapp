@@ -1,0 +1,133 @@
+*{
+    box-sizing: border-box;
+
+}
+
+/* Header, footer, body */
+.header, .footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F0FFFF;
+    color: black;
+    flex-shrink: 0;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+.header{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.footer{
+    font-size: 14px;
+}
+
+body{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+}
+
+/*Left-side menu*/
+.bookMain{
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    flex: 1;
+}
+
+.menu{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #FFF0F5;
+}
+
+#bookForm{
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    margin-top: 40px;
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+}
+
+#submitButton{
+    background-color: #4B0082;
+    color: white;
+    margin-top: 25px;
+    padding: 14px 34px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+#submitButton:hover{
+    opacity: 80%;
+}
+
+.label {
+    margin-bottom: 0.2rem;
+    font-weight: 600;
+    font-size: 1em; 
+  }
+
+
+/*Book table*/ 
+.list{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.table{
+    display: flex;
+    width:70%;
+    flex-direction: column;
+    margin-left: 100px;
+    margin-bottom:20px;
+    margin-top: 20px;
+}
+
+.bookTable{
+    border-collapse: collapse;
+    width: 75%;
+}
+
+.bookTable th, .bookTable td{
+    border-bottom:1px solid #ddd;
+    padding: 10px;
+    vertical-align: baseline;
+}
+
+.bookTable th{
+    text-align: left;
+    background-color:white;
+    color: black;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+
+/*Icons to remove and edit books in table.*/
+.fa-edit{
+    margin-left: 10px;
+}
+
+.fa-edit:hover, .fa-trash-alt:hover{
+    cursor:pointer;
+    opacity: 80%;
+}
+
+
+
+
+
