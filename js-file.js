@@ -3,155 +3,175 @@ To do list:
 - Validate input data (titles must be unique)
 - Add so its visible in the form if the inputdata is correct (dynamic)
 - Improve style
-- 
 */
 
-//Array to store book objects.
-let myLibrary = [];
-
 //Constructor for making book objects.
-function Book(title, author, pages, read){
-    this.title = title,
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
-}
-
-//Functions to add and edit books in myLibrary.
-function addBooktoLibrary(title, author, pages, read){
-    myLibrary.push(new Book(title,author,pages,read));
-}
-
-function removeBookFromLibrary(title){
-    console.log(title);
-    const bookIndex = getBookIndex(title);
-    console.log(bookIndex);
-    if (bookIndex > -1){
-        myLibrary.splice(bookIndex,1);
+class Book {
+    constructor(title, author, pages, read){
+        this.title = title,
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
     }
 }
 
-function editBookFromLibrary(title){
-    const bookIndex = getBookIndex(title);
-    if (bookIndex > -1){
-        if (myLibrary[bookIndex].read === "Read"){
-            myLibrary[bookIndex].read = "Not read";
-        } else {
-            myLibrary[bookIndex].read = "Read";
+class Library {
+    constructor(){
+        this.myLibrary = [];
+    }
+
+    addBooktoLibrary(title, author, pages, read){
+        this.myLibrary.push(new Book(title,author,pages,read));
+    }
+
+    removeBookFromLibrary(title){
+        const bookIndex = this.getBookIndex(title);
+        if (bookIndex > -1){
+            this.myLibrary.splice(bookIndex,1);
         }
     }
-}
 
-function getBookIndex(title){
-    let bookIndex;
-    for (let i = 0; i < myLibrary.length; i++){
-        if (myLibrary[i].title.toLowerCase() === title.toLowerCase()){
-            bookIndex = i;
+
+    editBookFromLibrary(title){
+        const bookIndex = this.getBookIndex(title);
+        if (bookIndex > -1){
+            if (this.myLibrary[bookIndex].read === "Read"){
+                this.myLibrary[bookIndex].read = "Not read";
+            } else {
+                this.myLibrary[bookIndex].read = "Read";
+            }
         }
     }
-    return bookIndex;
-}
 
-//Functions to add, remove and edit books to, from and in table.
-function deleteBook(e){
-    removeBookFromLibrary(e.target.parentNode.id);
-    updateBookTable();
-}
-
-function editBook(e){
-    editBookFromLibrary(e.target.parentNode.id);
-    updateBookTable();
-}
-
-function newBook(){
-    gettingFormData();
-    resetFormData();
-    updateBookTable();
-}
-
-//Retrieves data from the form
-function gettingFormData(){
-    const bookName = document.getElementById("bookName").value;
-    if (bookName===""){
-        alert("Empty title");
-        return;
-    }
-    if (getBookIndex(bookName) > -1){
-        alert("Already a title with this name");
-        return;
+    getBookIndex(title){
+        let bookIndex;
+        for (let i = 0; i < this.myLibrary.length; i++){
+            if (this.myLibrary[i].title.toLowerCase() === title.toLowerCase()){
+                bookIndex = i;
+            }
+        }
+        return bookIndex;
     }
 
-    const author = document.getElementById("author").value;
-    if (author==""){
-        alert("Empty author");
-        return;
+    getAllBooks(){
+        return this.myLibrary;
     }
-
-
-    const pages = document.getElementById("pages").value;
-    if (pages<0){
-        alert("Negative pages inserted")
-        return;
-    }
-    const readingStatus = document.getElementById("readingStatus").value;
-    addBooktoLibrary(bookName, author, pages, readingStatus);
 }
 
 
+const form = (() => {
+    let gettingFormData = () => {
+        const bookName = document.getElementById("bookName").value;
+        const author = document.getElementById("author").value;
+        const pages = document.getElementById("pages").value;
+        const readingStatus = document.getElementById("readingStatus").value;
 
-
-
-//Resets the form data
-function resetFormData(){
-    document.getElementById("bookName").value = ""
-    document.getElementById("author").value = ""
-    document.getElementById("pages").value = ""
-}
-
-
-//Updates the table
-function updateBookTable(){
-    let newBodyTable = document.createElement("tbody");
-    let oldBodyTable = document.querySelector(".bookTable tbody");
-
-    myLibrary.forEach(book => {
-        let row = document.createElement("tr");
-
-        let cellOne = document.createElement("td");
-        let cellTwo = document.createElement("td");
-        let cellThree = document.createElement("td");
-        let cellFour = document.createElement("td");
-        let edits = document.createElement("td");
-        edits.id = book.title;
+        if (bookName===""){
+            alert("Empty title");
+            return;
+        }
+        if (author==""){
+            alert("Empty author");
+            return;
+        }
         
-        cellOne.textContent = book.title;
-        cellTwo.textContent = book.author;
-        cellThree.textContent = book.pages;
-        cellFour.textContent = book.read;
+        if (pages<0){
+            alert("Negative pages inserted")
+            return;
+        }
+        return {bookName, author, pages, readingStatus};
+    }
 
-        let deleteimage = document.createElement("i");
-        deleteimage.className = "far fa-trash-alt";
-        deleteimage.addEventListener("click", deleteBook);
+    let resetFormData = () => {
+        document.getElementById("bookName").value = ""
+        document.getElementById("author").value = ""
+        document.getElementById("pages").value = ""
+    };
 
-        let editImage = document.createElement ("i")
-        editImage.className = "far fa-edit";
-        editImage.addEventListener("click", editBook);
+    const submitButton = document.querySelector("#submitButton");
+    submitButton.addEventListener("click", () => logic.newBook());
 
-        edits.append(deleteimage);
-        edits.append(editImage);
+    return{gettingFormData, resetFormData}
+})();
 
-        row.append(cellOne);
-        row.append(cellTwo);
-        row.append(cellThree);
-        row.append(cellFour);
-        row.append(edits);
-        
-        newBodyTable.append(row);
-    })
+const table = (() => {
 
-    oldBodyTable.parentNode.replaceChild(newBodyTable, oldBodyTable);
-}
+    const updateBookTable = (myLibrary) => {
+        let newBodyTable = document.createElement("tbody");
+        let oldBodyTable = document.querySelector(".bookTable tbody");
+    
+        myLibrary.forEach(book => {
+            let row = document.createElement("tr");
+            let cellOne = document.createElement("td");
+            let cellTwo = document.createElement("td");
+            let cellThree = document.createElement("td");
+            let cellFour = document.createElement("td");
+            let edits = document.createElement("td");
+            edits.id = book.title;
+            
+            cellOne.textContent = book.title;
+            cellTwo.textContent = book.author;
+            cellThree.textContent = book.pages;
+            cellFour.textContent = book.read;
+    
+            let deleteimage = document.createElement("i");
+            deleteimage.className = "far fa-trash-alt";
+            deleteimage.addEventListener("click", deleteBook);
+    
+            let editImage = document.createElement ("i")
+            editImage.className = "far fa-edit";
+            editImage.addEventListener("click", editBook);
+    
+            edits.append(deleteimage);
+            edits.append(editImage);
+    
+            row.append(cellOne);
+            row.append(cellTwo);
+            row.append(cellThree);
+            row.append(cellFour);
+            row.append(edits);
+            
+            newBodyTable.append(row);
+        });
+        oldBodyTable.parentNode.replaceChild(newBodyTable, oldBodyTable);
+    }
 
-//Listeners
-const submitButton = document.querySelector("#submitButton");
-submitButton.addEventListener("click", () => newBook());
+    const deleteBook = (e) => {
+        logic.removeBook(e.target.parentNode.id);
+    }
+    
+    const editBook = (e) => {
+        logic.editBook(e.target.parentNode.id);
+    }
+
+    return{updateBookTable, deleteBook, editBook};
+})();
+
+
+const logic = (() => {
+    let myLibrary = new Library();
+    let newBook = () => {
+        try {
+            let {bookName, author, pages, readingStatus} = form.gettingFormData();
+            myLibrary.addBooktoLibrary(bookName, author, pages, readingStatus);
+            updateTable();
+            form.resetFormData();
+        } catch (TypeError){console.log(TypeError)}
+
+    }
+    let removeBook = (bookName) => {
+        myLibrary.removeBookFromLibrary(bookName);
+        updateTable();
+    }
+
+    let editBook = (bookName) => {
+        myLibrary.editBookFromLibrary(bookName);
+        updateTable();
+    }
+
+    let updateTable = () => {
+        table.updateBookTable(myLibrary.getAllBooks());
+    }
+
+    return {newBook, removeBook, editBook}
+})();
